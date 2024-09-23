@@ -59,6 +59,8 @@ class ReceiverRTLSDR:
         self.daq_center_freq = 100  # MHz
         self.daq_rx_gain = 0  # [dB]
         self.daq_agc = False
+        self.daq_mrflo_freq = 1000 # MHz
+        self.daq_array_sel = 0
 
         # UI interface
         self.data_que = data_que
@@ -331,6 +333,54 @@ class ReceiverRTLSDR:
 
         else:
             self.logger.error("Failed to set the requested parameter, reply: {0}".format(status))
+            
+            
+    def set_mrflo_freq(self, lo_freq):
+        """
+        Configures the morefeus LO frequency of the receiver through the control interface
+
+        Paramters:
+        ----------
+            :param: center_freq: Required morfeus LO frequency to set [Hz]
+            :type:  center_freq: float
+        """
+        if self.receiver_connection_status:  # Check connection
+            self.daq_mrflo_freq = int(lo_freq)
+            # Set center frequency
+            cmd = "MRFF"
+            freq_bytes = pack("Q", int(lo_freq))
+            msg_bytes = cmd.encode() + freq_bytes + bytearray(116)
+            try:
+                _thread.start_new_thread(self.ctr_iface_communication, (msg_bytes,))
+            except Exception as error:
+                self.logger.error("Unable to start communication thread")
+                self.logger.error(f"Error message: {error}")
+                
+
+    def set_array_sel(self, array_sel):
+        """
+        Configures the morefeus LO frequency of the receiver through the control interface
+
+        Paramters:
+        ----------
+            :param: array_sel: Array selector value (0 - Outer, 1 - Center, 2 - Inner)
+            :type:  array_sel: float
+        """
+        print("Sending set_array_sel")
+        if self.receiver_connection_status:  # Check connection
+            self.daq_array_sel = array_sel #int(lo_freq)
+            # Set Array
+            cmd = "ARRY"
+                        
+            # Pack the string length and the string itself
+            array_sel_bytes = pack("Q", int(array_sel))
+            msg_bytes = cmd.encode() + array_sel_bytes + bytearray(116)
+            try:
+                _thread.start_new_thread(self.ctr_iface_communication, (msg_bytes,))
+            except Exception as error:
+                self.logger.error("Unable to start communication thread")
+                self.logger.error(f"Error message: {error}")            
+    
 
     def set_center_freq(self, center_freq):
         """

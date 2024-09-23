@@ -130,6 +130,50 @@ def get_daq_config_card_layout():
             ],
             className="field",
         ),
+        
+        html.Div(
+            [
+                html.Div("Morfeus LO Frequency [MHz]:", className="field-label"),
+                dcc.Input(
+                    id="daq_mrflo_freq",
+                    value=web_interface.module_receiver.daq_mrflo_freq,
+                    type="number",
+                    min=24,
+                    debounce=True,
+                    className="field-body-textbox",
+                ),
+            ],
+            className="field",
+        ),        
+        
+        html.Div(
+            [
+                html.Button("Update Morfus LO", id="btn-update_mrflo", className="btn"),
+            ],
+            className="field",
+        ),        
+        
+        
+        html.Div(
+            [
+                html.Div("Antenna Array Selector:", className="field-label"),
+                dcc.Dropdown(
+                    id="daq_array_sel",
+                    options=[
+                        {"label": "Outer", "value": 0 },
+                        {"label": "Center", "value": 1},
+                        {"label": "Inner", "value": 2},
+                    ],
+                    value=web_interface.module_receiver.daq_array_sel,
+                    clearable=False,
+                    style={"display": "inline-block"},
+                    className="field-body",
+                ),
+            ],
+            className="field",
+        ),
+
+        
         html.Div(
             [
                 html.Div(
